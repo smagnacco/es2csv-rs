@@ -1,0 +1,10 @@
+*.tar
+*.gz
+.vscode
+/target
+/examples/target
+**/*.rs.bk
+.idea
+/.idea/
+*.iml
+query.json

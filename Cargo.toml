@@ -1,0 +1,14 @@
+[package]
+name = "es2csv-rs"
+version = "0.1.0"
+authors = ["smagnacco <smangacco@despegar.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "3.0.0-beta.1"
+elasticsearch = "7.7.0-alpha.1"
+serde_json = "~1"
+json = "0.12.4"
+tokio = { version = "*", features = ["full"] }
