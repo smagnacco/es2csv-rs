@@ -18,7 +18,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let transport = Transport::single_node(&url)?;
     let client = Elasticsearch::new(transport);
 
-    //"hotels_metadata_*_2020_05_29_00"
     let search_response: Response = client
         .search(SearchParts::Index(&[&index]))
         .from(0)
@@ -39,8 +38,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-
-//run -u 'http://zoom-hotels-es-c-00:9290' -i 'hotels_metadata_*_$DATE_*_'  -q '{     "_source": [     "domain.country",     "search_time",     "metadata.destination",     "metadata.hotel",     "metadata.distribution",     "metadata.checkin_date",     "metadata.stay",     "metadata.currency",     "metadata.total",     "metadata.meal_plan",     "metadata.promo_percentage",     "metadata.tags"     ],     "query": {       "bool": {         "must": [         {           "term": {             "domain.country": "AR"           }         },         {           "term": {             "domain.channel": "site"           }         },         {          "term": {             "metadata.contexts": "hotel"           }         }       ]       }     } }' -o output.csv
 
 fn process_arguments() -> ArgMatches {
     return App::new("es2csv-rs")
