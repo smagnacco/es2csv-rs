@@ -186,6 +186,7 @@ dependencies = [
  "clap",
  "elasticsearch",
  "json",
+ "serde",
  "serde_json",
  "tokio",
 ]

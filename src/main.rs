@@ -2,6 +2,7 @@ use clap::{App, Arg, ArgMatches};
 use elasticsearch::http::transport::Transport;
 use elasticsearch::{Elasticsearch, SearchParts};
 use elasticsearch::http::response::Response;
+use serde_json::{json, Value};
 use std::process;
 
 
@@ -18,7 +19,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Elasticsearch::new(transport);
 
     //"hotels_metadata_*_2020_05_29_00"
-    let response: Response = client
+    let search_response: Response = client
         .search(SearchParts::Index(&[&index]))
         .from(0)
         .size(10)
@@ -26,9 +27,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .send()
         .await?;
 
-    let response_body = response.text().await?;
+    // get the HTTP response status code
+    let status_code = search_response.status_code();
 
-    println!("result: {}", response_body);
+    // read the response body. Consumes search_response
+    //let response_body = search_response.json::<Value>().await?;
+
+    let response_body = search_response.text().await?;
+
+    println!("result: {}, body\n {}", status_code, response_body);
 
     Ok(())
 }
