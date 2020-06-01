@@ -4,19 +4,21 @@ use elasticsearch::{Elasticsearch, SearchParts};
 use elasticsearch::http::response::Response;
 use serde_json::{Value};
 use std::process;
+use std::fs::File;
+use std::io::Write;
 
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let arguments = process_arguments();
+    let arguments: ArgMatches = process_arguments();
 
-    let url = get_from("url", &arguments);
-    let index = get_from("index", &arguments);
-    let query = get_from("query", &arguments);
-    //let output = get_from("output", &arguments);
+    let url: String = get_from("url", &arguments);
+    let index: String = get_from("index", &arguments);
+    let query: String = get_from("query", &arguments);
+    let path: String = get_from("output", &arguments);
 
-    let transport = Transport::single_node(&url)?;
-    let client = Elasticsearch::new(transport);
+    let transport: Transport = Transport::single_node(&url)?;
+    let client: Elasticsearch = Elasticsearch::new(transport);
 
     let json_query: Value = serde_json::from_str(&query)?;
 
@@ -29,14 +31,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     // get the HTTP response status code
-    let status_code = search_response.status_code();
+    let status_code: StatusCode = search_response.status_code();
 
     // read the response body. Consumes search_response
     //let response_body = search_response.json::<Value>().await?;
 
-    let response_body = search_response.text().await?;
+    let response_body: String = search_response.text().await?;
 
     println!("result: {}, body\n {}", status_code, response_body);
+
+    let mut csv_file: File = File::create(path).expect("unable to create file");
+
+    let write_body: &[u8] = response_body.as_str().as_bytes();
+
+    csv_file.write_all(write_body).expect("unable to write file");
 
     Ok(())
 }
