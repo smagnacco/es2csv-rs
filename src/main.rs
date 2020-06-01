@@ -2,7 +2,7 @@ use clap::{App, Arg, ArgMatches};
 use elasticsearch::http::transport::Transport;
 use elasticsearch::{Elasticsearch, SearchParts};
 use elasticsearch::http::response::Response;
-use serde_json::{json, Value};
+use serde_json::{Value};
 use std::process;
 
 
@@ -18,11 +18,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let transport = Transport::single_node(&url)?;
     let client = Elasticsearch::new(transport);
 
+    let json_query: Value = serde_json::from_str(&query)?;
+
     let search_response: Response = client
         .search(SearchParts::Index(&[&index]))
         .from(0)
         .size(10)
-        .body(json!(query))
+        .body(json_query)
         .send()
         .await?;
 
